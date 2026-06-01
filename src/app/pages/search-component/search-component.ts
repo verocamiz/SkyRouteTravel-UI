@@ -6,6 +6,7 @@ import { AIRPORTS } from '../../core/data/airports-data';
 import { CabinClass } from '../../core/models/cabin-class.enum';
 import { Flight, FlightSearchRequest, SortOption } from '../../core/models/flight-models';
 import { FlightService } from '../../core/services/flight.service';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -18,6 +19,7 @@ export class SearchComponent {
   airports = AIRPORTS;
   private fb = inject(FormBuilder);
   private flightService = inject(FlightService);
+  private router = inject(Router);
 
   cabinClasses = [
     { value: CabinClass.Economy, label: 'Economy' },
@@ -117,6 +119,13 @@ export class SearchComponent {
     const [hours, minutes] = duration.split(':').map(Number);
     return hours * 60 + minutes;
   }
+
+  selectFlight(flight: Flight): void {
+  const passengerCount = Number(this.searchForm.getRawValue().passengers);
+  this.router.navigate(['/booking'], {
+    state: { flight, passengerCount },
+  });
+}
 
 
 }

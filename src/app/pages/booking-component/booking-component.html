@@ -1,0 +1,127 @@
+@if (flight) {
+  <a routerLink="/" class="btn btn-link ps-0 mb-3">← Back to search</a>
+
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">Flight summary</h5>
+
+          <dl class="row mb-0">
+            <dt class="col-sm-4">Route</dt>
+            <dd class="col-sm-8">
+              {{ getCity(flight.originAirportCode) }} ({{ flight.originAirportCode }})
+              →
+              {{ getCity(flight.destinationAirportCode) }} ({{ flight.destinationAirportCode }})
+            </dd>
+
+            <dt class="col-sm-4">Provider</dt>
+            <dd class="col-sm-8">{{ flight.provider }}</dd>
+
+            <dt class="col-sm-4">Flight</dt>
+            <dd class="col-sm-8">{{ flight.flightNumber }}</dd>
+
+            <dt class="col-sm-4">Departure</dt>
+            <dd class="col-sm-8">{{ flight.departureTime | date: 'short' }}</dd>
+
+            <dt class="col-sm-4">Arrival</dt>
+            <dd class="col-sm-8">{{ flight.arrivalTime | date: 'short' }}</dd>
+
+            <dt class="col-sm-4">Cabin</dt>
+            <dd class="col-sm-8">{{ cabinLabel(flight.cabinClass) }}</dd>
+          </dl>
+
+          <hr />
+
+          <h6 class="mb-3">Price breakdown</h6>
+
+          <div class="d-flex justify-content-between mb-2">
+            <span>Per passenger</span>
+            <span>USD {{ flight.pricePerPassenger | number: '1.2-2' }}</span>
+          </div>
+
+          <div class="d-flex justify-content-between mb-2">
+            <span>Passengers</span>
+            <span>× {{ passengerCount }}</span>
+          </div>
+
+          <div class="d-flex justify-content-between fw-bold pt-2 border-top">
+            <span>Total</span>
+            <span>USD {{ flight.totalPrice | number: '1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-7">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">Passenger details</h5>
+
+          <form [formGroup]="bookingForm" (ngSubmit)="onConfirm()">
+            <div class="mb-3">
+              <label class="form-label" for="fullName">Full name</label>
+              <input
+                id="fullName"
+                type="text"
+                class="form-control"
+                formControlName="fullName"
+                autocomplete="name"
+              />
+              @if (bookingForm.controls.fullName.touched && bookingForm.controls.fullName.errors?.['required']) {
+                <small class="text-danger d-block mt-1">Full name is required.</small>
+              }
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="email">Email address</label>
+              <input
+                id="email"
+                type="email"
+                class="form-control"
+                formControlName="email"
+                autocomplete="email"
+              />
+              @if (bookingForm.controls.email.touched && bookingForm.controls.email.errors?.['required']) {
+                <small class="text-danger d-block mt-1">Email is required.</small>
+              }
+              @if (bookingForm.controls.email.touched && bookingForm.controls.email.errors?.['email']) {
+                <small class="text-danger d-block mt-1">Enter a valid email address.</small>
+              }
+            </div>
+
+            <div class="mb-3">
+            <label class="form-label" for="documentNumber">{{ documentLabel }}</label>
+            <input
+              id="documentNumber"
+              type="text"
+              class="form-control"
+              formControlName="documentNumber"
+            />
+
+            @if (bookingForm.controls.documentNumber.touched && bookingForm.controls.documentNumber.errors?.['required']) {
+              <small class="text-danger d-block mt-1">{{ documentLabel }} is required.</small>
+            }
+            @if (bookingForm.controls.documentNumber.touched && bookingForm.controls.documentNumber.errors?.['passportFormat']) {
+              <small class="text-danger d-block mt-1">Invalid passport format (6–12 letters or digits).</small>
+            }
+            @if (bookingForm.controls.documentNumber.touched && bookingForm.controls.documentNumber.errors?.['nationalIdFormat']) {
+              <small class="text-danger d-block mt-1">Invalid national ID (7–11 digits).</small>
+            }
+          </div>
+
+           @if (loading) {
+            <div class="spinner-border spinner-border-sm text-primary me-2"></div>
+          }
+          @if (error) {
+            <div class="alert alert-danger mt-3">{{ error }}</div>
+          }
+          <button type="submit" class="btn btn-primary" [disabled]="loading">
+            {{ loading ? 'Confirming...' : 'Confirm Booking' }}
+          </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+}

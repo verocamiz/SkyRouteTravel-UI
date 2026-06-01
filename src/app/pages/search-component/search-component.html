@@ -113,6 +113,7 @@
           <th>Duration</th>
           <th>Cabin</th>
           <th>Price</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -132,6 +133,11 @@
                 USD {{ flight.pricePerPassenger | number: '1.2-2' }} per person
               </small>
             </td>
+            <td>
+            <button type="button" class="btn btn-sm btn-primary" (click)="selectFlight(flight)">
+              Book
+            </button>
+          </td>
           </tr>
         }
       </tbody>

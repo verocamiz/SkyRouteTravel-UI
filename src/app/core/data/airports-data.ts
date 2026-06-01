@@ -12,3 +12,12 @@ export const AIRPORTS: AirportsData[] = [
   { code: 'JFK', city: 'New York', country: 'US' },
   { code: 'GRU', city: 'São Paulo', country: 'BR' },
 ];
+
+export function isInternationalRoute(originCode: string, destinationCode: string): boolean {
+  const origin = AIRPORTS.find((a) => a.code === originCode);
+  const destination = AIRPORTS.find((a) => a.code === destinationCode);
+  if (!origin || !destination) {
+    return false;
+  }
+  return origin.country !== destination.country;
+}

@@ -1,0 +1,27 @@
+<div class="container py-4">
+  <div class="card text-center mx-auto" style="max-width: 520px">
+    <div class="card-body py-5">
+      <div class="text-success mb-3" style="font-size: 2.5rem">✓</div>
+
+      <h1 class="h4 mb-2">Booking confirmed</h1>
+      <p class="text-muted mb-4">Save your booking reference code</p>
+
+      <p class="text-uppercase text-muted small mb-1">Booking reference</p>
+      <p class="display-6 fw-bold text-primary mb-4 user-select-all">
+        {{ bookingReference }}
+      </p>
+
+      @if (flight) {
+        <p class="text-muted small mb-0">
+          {{ flight.provider }} · {{ flight.flightNumber }}
+          · {{ flight.originAirportCode }} → {{ flight.destinationAirportCode }}
+          · {{ passengerCount }} passenger(s)
+        </p>
+      }
+
+      <hr class="my-4" />
+
+      <a routerLink="/" class="btn btn-primary">Back</a>
+    </div>
+  </div>
+</div>
