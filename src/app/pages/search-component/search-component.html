@@ -1,0 +1,140 @@
+<form [formGroup]="searchForm" (ngSubmit)="onSearch()" class="row g-3 mb-4">
+  <div class="col-md-4">
+    <label class="form-label" for="origin">Origin</label>
+    <select id="origin" class="form-select" formControlName="originAirportCode">
+      @for (airport of airports; track airport.code) {
+        <option [value]="airport.code">
+          {{ airport.city }} ({{ airport.code }})
+        </option>
+      }
+    </select>
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label" for="destination">Destination</label>
+    <select id="destination" class="form-select" formControlName="destinationAirportCode">
+      @for (airport of airports; track airport.code) {
+        <option [value]="airport.code">
+          {{ airport.city }} ({{ airport.code }})
+        </option>
+      }
+    </select>
+     <div class="field-error">
+      @if (searchForm.errors?.['sameAirport'] && searchForm.touched) {
+        <small class="text-danger">Origin and destination must be different.</small>
+      }
+    </div>
+  </div>
+
+
+  <div class="col-md-4">
+    <label class="form-label" for="departureDate">Departure date</label>
+    <input
+      id="departureDate"
+      type="date"
+      class="form-control"
+      formControlName="departureDate"
+    />
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label" for="passengers">Passengers</label>
+    <input
+      id="passengers"
+      type="number"
+      class="form-control"
+      min="1"
+      max="9"
+      formControlName="passengers"
+    />
+
+      <div class="field-error">
+    @if (searchForm.controls.passengers.touched && searchForm.controls.passengers.errors?.['min']) {
+      <small class="text-danger">Minimum 1 passenger.</small>
+    }
+    @if (searchForm.controls.passengers.touched && searchForm.controls.passengers.errors?.['max']) {
+      <small class="text-danger">Maximum 9 passengers.</small>
+    }
+  </div>
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label" for="cabinClass">Cabin class</label>
+    <select id="cabinClass" class="form-select" formControlName="cabinClass">
+      @for (cabin of cabinClasses; track cabin.value) {
+        <option [value]="cabin.value">{{ cabin.label }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="col-12">
+    <button type="submit" class="btn btn-primary" [disabled]="loading || searchForm.invalid">
+      Search flights
+    </button>
+  </div>
+</form>
+
+@if (loading) {
+  <div class="d-flex align-items-center gap-2 mb-3">
+    <div class="spinner-border text-primary" role="status"></div>
+    <span>Searching flights...</span>
+  </div>
+}
+
+@if (hasSearched && !loading && sortedFlights.length === 0) {
+  <div class="alert alert-info">No flights found for this search.</div>
+}
+
+@if (sortedFlights.length > 0) {
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <span>{{ sortedFlights.length }} flight(s) found</span>
+
+    <select
+      class="form-select w-auto"
+      [value]="sortBy"
+      (change)="onSortChange($event)"
+    >
+      <option value="price-asc">Price: low to high</option>
+      <option value="price-desc">Price: high to low</option>
+      <option value="duration-asc">Duration: shortest first</option>
+      <option value="departure-asc">Departure time</option>
+    </select>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-striped table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>Provider</th>
+          <th>Flight</th>
+          <th>Route</th>
+          <th>Departure</th>
+          <th>Arrival</th>
+          <th>Duration</th>
+          <th>Cabin</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (flight of sortedFlights; track flight.flightNumber) {
+          <tr>
+            <td>{{ flight.provider }}</td>
+            <td>{{ flight.flightNumber }}</td>
+            <td>{{ flight.originAirportCode }} → {{ flight.destinationAirportCode }}</td>
+            <td>{{ flight.departureTime | date: 'short' }}</td>
+            <td>{{ flight.arrivalTime | date: 'short' }}</td>
+            <td>{{ flight.duration }}</td>
+            <td>{{ cabinLabel(flight.cabinClass) }}</td>
+            <td>
+              <strong>USD {{ flight.totalPrice | number: '1.2-2' }} total</strong>
+              <br />
+              <small class="text-muted">
+                USD {{ flight.pricePerPassenger | number: '1.2-2' }} per person
+              </small>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
