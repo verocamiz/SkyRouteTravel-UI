@@ -1,59 +1,37 @@
-# SkyRouteTravelUI
+# SkyRoute Travel — UI
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.2.
-
-## Development server
-
-To start a local development server, run:
+Angular 20 app for flight search, booking, and confirmation. Requires **SkyRouteTravel-API** running locally.
+ 
+```
+** UI:**
 
 ```bash
+npm install
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Open http://localhost:4200 — API base URL: `http://localhost:5014/api` (`src/app/core/config/api-config.ts`).
 
-## Code scaffolding
+**Demo search:** EZE → COR, `2026-07-06`, Economy
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Flow
 
-```bash
-ng generate component component-name
-```
+`Search` → select flight → `Booking` → confirm → `Confirmation` (booking reference).
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Architecture
 
-```bash
-ng generate --help
-```
+- **Standalone components** — one page per step: `search-component`, `booking-component`, `confirmation-component`.
+- **`core/`** — models (API contracts), `FlightService` / `BookingService`, hardcoded airports for dropdowns and passport vs national ID.
+- **Router state** — passes selected flight and booking reference between routes (no global store).
+- **Reactive forms** — search validation; booking with dynamic document label (Passport / National ID) by route.
+- **Client-side sort** — price, duration, departure; no extra API calls on sort change.
+- **Bootstrap 5** — global styles only.
 
-## Building
+## Trade-offs and limitations
 
-To build the project run:
+- Refresh or direct URL to `/booking` or `/confirmation` loses state (redirects to search).
+- Returning from booking does not restore the previous search results.
+- No guards, interceptors, lazy routes, or environment files.
+- Airports hardcoded; API has no airport catalog.
+- Single passenger form.
 
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
