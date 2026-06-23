@@ -40,7 +40,8 @@ export class SearchComponent {
   hasSearched = false;
   error: string | null = null;
   flights: Flight[] = [];
-  sortBy: SortOption = 'price-asc';
+  sortBy: SortOption = 'price-desc';
+  sortedFlights: Flight[] = [];
 
 
   onSearch(): void {
@@ -67,6 +68,7 @@ export class SearchComponent {
     this.flightService.searchFlights(request).subscribe({
       next: (results) => {
         this.flights = results;
+        this.applySorting();
         this.loading = false;
       },
     error: () => {
@@ -76,30 +78,29 @@ export class SearchComponent {
   });
   }
 
-  get sortedFlights(): Flight[] {
-    const list = [...this.flights];
+  private applySorting(): void {
+  const list = [...this.flights];
 
-    switch (this.sortBy) {
-      case 'price-asc':
-        return list.sort((a, b) => a.totalPrice - b.totalPrice);
-      case 'price-desc':
-        return list.sort((a, b) => b.totalPrice - a.totalPrice);
-      case 'duration-asc':
-        return list.sort(
-          (a, b) => this.toMinutes(a.duration) - this.toMinutes(b.duration),
-        );
-      case 'departure-asc':
-        return list.sort(
-          (a, b) =>
-            new Date(a.departureTime).getTime() -
-            new Date(b.departureTime).getTime(),
-        );
-      default:
-        return list;
-    }
+  switch (this.sortBy) {
+    case 'price-asc':
+      this.sortedFlights = list.sort((a, b) => a.totalPrice - b.totalPrice);
+      break;
+    case 'price-desc':
+      this.sortedFlights = list.sort((a, b) => b.totalPrice - a.totalPrice);
+      break;
+    case 'duration-asc':
+      this.sortedFlights = list.sort((a, b) => this.toMinutes(a.duration) - this.toMinutes(b.duration));
+      break;
+    case 'departure-asc':
+      this.sortedFlights = list.sort(
+        (a, b) => new Date(a.departureTime).getTime() - new Date(b.departureTime).getTime()
+      );
+      break;
   }
+}
   onSortChange(event: Event): void {
     this.sortBy = (event.target as HTMLSelectElement).value as SortOption;
+    this.applySorting();
   }
 
   cabinLabel(cabin: CabinClass): string {
